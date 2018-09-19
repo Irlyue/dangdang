@@ -1,4 +1,4 @@
-package com.example.wenfeng.mysecondapp;
+package com.example.wenfeng.mysecondapp.task;
 
 import android.app.Activity;
 import android.app.ActivityManager;
@@ -7,6 +7,10 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.PowerManager;
 import android.util.Log;
+
+import com.example.wenfeng.mysecondapp.CheckInService;
+import com.example.wenfeng.mysecondapp.strategy.CheckInUtility;
+import com.example.wenfeng.mysecondapp.strategy.ICheckInStrategy;
 
 import java.util.List;
 import java.util.TimerTask;

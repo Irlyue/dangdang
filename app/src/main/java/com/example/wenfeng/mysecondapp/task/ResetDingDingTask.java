@@ -1,6 +1,9 @@
-package com.example.wenfeng.mysecondapp;
+package com.example.wenfeng.mysecondapp.task;
 
 import android.util.Log;
+
+import com.example.wenfeng.mysecondapp.CheckInService;
+import com.example.wenfeng.mysecondapp.utility.DateUtility;
 
 import java.util.Date;
 import java.util.TimerTask;
@@ -15,17 +18,14 @@ public class ResetDingDingTask extends TimerTask {
     @Override
     public void run() {
         if(isTimeToReset()){
-            Log.i(CheckInService.LOG_TAG, "Time to reset..");
+            Log.i(CheckInService.LOG_TAG, "Reset task");
             mStartDingDingTask.setTodayChecked(false);
-        }else{
-            Log.i(CheckInService.LOG_TAG, "Wait for tomorrow..");
         }
     }
 
     private boolean isTimeToReset(){
         Date now = new Date();
         Date resetDate = DateUtility.setDayAndReturn(now, mResetDate);
-        Log.i(CheckInService.LOG_TAG, String.format("Reset date: %s, now: %s", resetDate, now));
         return now.after(resetDate);
     }
 }

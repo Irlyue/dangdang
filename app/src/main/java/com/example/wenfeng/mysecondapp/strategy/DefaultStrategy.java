@@ -1,6 +1,8 @@
-package com.example.wenfeng.mysecondapp;
+package com.example.wenfeng.mysecondapp.strategy;
 
 import android.util.Log;
+
+import com.example.wenfeng.mysecondapp.utility.DateUtility;
 
 import java.util.Calendar;
 import java.util.Date;
@@ -34,7 +36,6 @@ public class DefaultStrategy implements ICheckInStrategy {
     public boolean isTimeWithinRange(Date date) {
         Date left = DateUtility.setDayAndReturn(date, mLeft);
         Date right = DateUtility.setDayAndReturn(date, mRight);
-        Log.i("Service", String.format("left: %s, right %s", left.toString(), right.toString()));
         return isDayWanted(date) && date.after(left) && date.before(right);
     }
 
