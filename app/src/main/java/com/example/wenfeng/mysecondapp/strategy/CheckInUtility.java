@@ -18,7 +18,6 @@ public class CheckInUtility {
 
     public boolean isTimeToCheckIn(){
         Date date = new Date();
-        Log.i("Service", date.toString());
         for(ICheckInStrategy strategy: mStrategies){
             if(strategy.isTimeWithinRange(date)){
                 return true;
