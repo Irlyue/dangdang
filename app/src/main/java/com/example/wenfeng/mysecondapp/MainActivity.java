@@ -32,7 +32,13 @@ public class MainActivity extends AppCompatActivity {
 
 
     public void onButtonClicked(View v){
+        disableTimeButton();
         startCheckInService();
+    }
+
+    private void disableTimeButton(){
+        findViewById(R.id.left_text_view).setEnabled(false);
+        findViewById(R.id.right_text_view).setEnabled(false);
     }
 
     private void startCheckInService(){
