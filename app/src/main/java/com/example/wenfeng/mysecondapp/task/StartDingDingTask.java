@@ -2,14 +2,18 @@ package com.example.wenfeng.mysecondapp.task;
 
 import android.app.Activity;
 import android.app.ActivityManager;
+import android.app.KeyguardManager;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
 import android.os.PowerManager;
+import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 
 import com.example.wenfeng.mysecondapp.CheckInService;
+import com.example.wenfeng.mysecondapp.MainActivity;
 import com.example.wenfeng.mysecondapp.strategy.IResetStrategy;
+import com.example.wenfeng.mysecondapp.utility.AndroidUtility;
 
 import java.util.Timer;
 
@@ -37,8 +41,7 @@ public class StartDingDingTask extends RepeatedTimerTask {
 
     private void startDingDing(){
         Log.i(CheckInService.LOG_TAG, "Starting ding ding...");
-        Intent launchIntent = mService.getPackageManager().getLaunchIntentForPackage(DING_DING_PACKAGE_NAME);
-        mService.startActivity(launchIntent);
+        AndroidUtility.startApplication(mService, DING_DING_PACKAGE_NAME);
     }
 
     private void wakeUpScreen(){
