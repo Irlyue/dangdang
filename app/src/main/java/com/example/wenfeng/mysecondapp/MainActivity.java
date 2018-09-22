@@ -8,7 +8,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
-import android.widget.EditText;
+import android.widget.Button;
 import android.widget.Toast;
 
 import java.io.File;
@@ -34,17 +34,26 @@ public class MainActivity extends AppCompatActivity {
     public void onButtonClicked(View v){
         startCheckInService();
     }
+
     private void startCheckInService(){
         if(!isServiceRunning(CheckInService.class)) {
             Toast.makeText(this, "Service starting", Toast.LENGTH_SHORT).show();
-            EditText editText = (EditText)findViewById(R.id.time_edittext);
+            Button left = findViewById(R.id.left_text_view);
+            Button right = findViewById(R.id.right_text_view);
             mServiceIntent = new Intent(this, CheckInService.class);
-            mServiceIntent.putExtra(CheckInService.E_CHECK_IN_TIME, editText.getText().toString());
-            mServiceIntent.putExtra(CheckInService.E_RESET_TIME, "23:30:00");
+            mServiceIntent.putExtra(CheckInService.E_RANGE_LEFT, left.getText().toString());
+            mServiceIntent.putExtra(CheckInService.E_RANGE_RIGHT, right.getText().toString());
             startService(mServiceIntent);
         }else{
             Toast.makeText(this, "Service already started!", Toast.LENGTH_SHORT).show();
         }
+    }
+
+    public void showTimePicker(View v){
+        Button view = (Button)v;
+        TimePickerFragment newFragment = new TimePickerFragment();
+        newFragment.setView(view);
+        newFragment.show(getSupportFragmentManager(), "timePicker");
     }
 
     public void stopCheckInService(View v){

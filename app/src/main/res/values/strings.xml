@@ -3,4 +3,6 @@
     <string name="edit_message">Enter a message</string>
     <string name="button_send">Send</string>
     <string name="chooser_title">Share this photo with</string>
+    <string name="left_default_time">07:45:00</string>
+    <string name="right_default_time">08:15:00</string>
 </resources>

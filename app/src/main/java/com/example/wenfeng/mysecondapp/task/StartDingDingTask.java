@@ -9,42 +9,36 @@ import android.os.PowerManager;
 import android.util.Log;
 
 import com.example.wenfeng.mysecondapp.CheckInService;
-import com.example.wenfeng.mysecondapp.strategy.CheckInUtility;
-import com.example.wenfeng.mysecondapp.strategy.ICheckInStrategy;
+import com.example.wenfeng.mysecondapp.strategy.IResetStrategy;
 
-import java.util.List;
-import java.util.TimerTask;
+import java.util.Timer;
 
-public class StartDingDingTask extends TimerTask {
+public class StartDingDingTask extends RepeatedTimerTask {
     public final static int WAIT_SECONDS = 30;
     public final static String DING_DING_PACKAGE_NAME = "com.alibaba.android.rimet";
     private Service mService;
-    private CheckInUtility mCheckIn;
 
 
-    private boolean mTodayChecked;
-
-    public StartDingDingTask(Service service, List<ICheckInStrategy> strategies){
-        mTodayChecked = false;
+    public StartDingDingTask(Timer timer, IResetStrategy strategy, Service service){
+        super(timer, strategy, StartDingDingTask.class.getSimpleName());
         mService = service;
-        mCheckIn = new CheckInUtility(strategies);
     }
 
     @Override
-    public void run() {
-        if(isTodayChecked())
-            return;
-        if(mCheckIn.isTimeToCheckIn()) {
-            wakeUpScreen();
-            Log.i(CheckInService.LOG_TAG, "Starting ding ding...");
-            Intent launchIntent = mService.getPackageManager().getLaunchIntentForPackage(DING_DING_PACKAGE_NAME);
-            mService.startActivity(launchIntent);
-            setTodayChecked(true);
-            waitForSeconds(WAIT_SECONDS);
-            goToHomeScreen();
-            waitForSeconds(5);
-            killDingDing();
-        }
+    protected void executeTask() {
+        Log.i(CheckInService.LOG_TAG, String.format("ExecuteTask() on %s", getDate()));
+        wakeUpScreen();
+        startDingDing();
+        waitForSeconds(WAIT_SECONDS);
+        goToHomeScreen();
+        waitForSeconds(5);
+        killDingDing();
+    }
+
+    private void startDingDing(){
+        Log.i(CheckInService.LOG_TAG, "Starting ding ding...");
+        Intent launchIntent = mService.getPackageManager().getLaunchIntentForPackage(DING_DING_PACKAGE_NAME);
+        mService.startActivity(launchIntent);
     }
 
     private void wakeUpScreen(){
@@ -76,13 +70,5 @@ public class StartDingDingTask extends TimerTask {
         Log.i(CheckInService.LOG_TAG, "Killing ding ding...");
         ActivityManager am = (ActivityManager) mService.getSystemService(Activity.ACTIVITY_SERVICE);
         am.killBackgroundProcesses(DING_DING_PACKAGE_NAME);
-    }
-
-    public boolean isTodayChecked() {
-        return mTodayChecked;
-    }
-
-    public void setTodayChecked(boolean todayChecked) {
-        this.mTodayChecked = todayChecked;
     }
 }

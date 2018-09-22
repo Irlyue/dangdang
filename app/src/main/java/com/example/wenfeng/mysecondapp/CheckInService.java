@@ -8,10 +8,10 @@ import android.os.IBinder;
 import android.support.annotation.Nullable;
 import android.util.Log;
 
-import com.example.wenfeng.mysecondapp.strategy.DefaultStrategy;
-import com.example.wenfeng.mysecondapp.strategy.ICheckInStrategy;
+import com.example.wenfeng.mysecondapp.strategy.FixedDateStrategy;
+import com.example.wenfeng.mysecondapp.strategy.RandomDateStrategy;
+import com.example.wenfeng.mysecondapp.task.RepeatedTimerTask;
 import com.example.wenfeng.mysecondapp.utility.DateUtility;
-import com.example.wenfeng.mysecondapp.task.ResetDingDingTask;
 import com.example.wenfeng.mysecondapp.task.StartDingDingTask;
 
 import java.util.ArrayList;
@@ -23,12 +23,11 @@ import java.util.TimerTask;
 public class CheckInService extends Service {
 
     public final static String LOG_TAG = CheckInService.class.getSimpleName();
-    public final static String E_CHECK_IN_TIME = "0";
-    public final static String E_RESET_TIME = "1";
+    public final static String E_RANGE_LEFT = "2";
+    public final static String E_RANGE_RIGHT = "3";
     public final static String SP = "shared preferences";
-    public final static int TIMER_DELAY_SECONDS = 10;
 
-    private List<TimerTask> mTimerTasks;
+    private List<RepeatedTimerTask> mTimerTasks;
     private Timer mTimer;
 
     @Nullable
@@ -55,31 +54,28 @@ public class CheckInService extends Service {
 
     private void getDataFromIntent(Intent intent){
         Log.i(LOG_TAG, "Getting data from intent...");
-        List<ICheckInStrategy> strategies = new ArrayList<>();
-        Date resetTime, checkInTime;
-        if(intent.getStringExtra(E_CHECK_IN_TIME) != null) {
+        Date left, right;
+        if(intent.getStringExtra(E_RANGE_LEFT) != null) {
             saveCurrentData(intent);
-            checkInTime = DateUtility.strToDate(intent.getStringExtra(E_CHECK_IN_TIME));
-            resetTime = DateUtility.strToDate(intent.getStringExtra(E_RESET_TIME));
+            left = DateUtility.strToDate(intent.getStringExtra(E_RANGE_LEFT));
+            right = DateUtility.strToDate(intent.getStringExtra(E_RANGE_RIGHT));
             Log.i(LOG_TAG, "Data available, saved to shared preference.");
         }else{
             SharedPreferences sharedPreferences = getSharedPreferences(SP, Context.MODE_PRIVATE);
-            checkInTime = DateUtility.strToDate(sharedPreferences.getString(E_CHECK_IN_TIME, "08:00:00"));
-            resetTime = DateUtility.strToDate(sharedPreferences.getString(E_RESET_TIME, "23:30:00"));
+            left = DateUtility.strToDate(sharedPreferences.getString(E_RANGE_LEFT, "08:00:00"));
+            right = DateUtility.strToDate(sharedPreferences.getString(E_RANGE_RIGHT, "08:20:00"));
             Log.i(LOG_TAG, "Data unavailable, restored from shared preference.");
         }
-        Log.i(LOG_TAG, String.format("Check in time(%s), reset time(%s)", checkInTime, resetTime));
-        strategies.add(new DefaultStrategy(checkInTime));
-        StartDingDingTask startDingDingTask = new StartDingDingTask(this, strategies);
+        Log.i(LOG_TAG, String.format("Left: %s, right: %s", left, right));
+        StartDingDingTask startDingDingTask = new StartDingDingTask(mTimer, new RandomDateStrategy(left, right), this);
         mTimerTasks.add(startDingDingTask);
-        mTimerTasks.add(new ResetDingDingTask(startDingDingTask, resetTime));
     }
 
     private void saveCurrentData(Intent intent){
         SharedPreferences sharedPreferences= getSharedPreferences(SP, Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPreferences.edit();
-        editor.putString(E_CHECK_IN_TIME, intent.getStringExtra(E_CHECK_IN_TIME));
-        editor.putString(E_RESET_TIME, intent.getStringExtra(E_RESET_TIME));
+        editor.putString(E_RANGE_LEFT, intent.getStringExtra(E_RANGE_LEFT));
+        editor.putString(E_RANGE_RIGHT, intent.getStringExtra(E_RANGE_RIGHT));
         editor.apply();
     }
 
@@ -95,8 +91,10 @@ public class CheckInService extends Service {
 
     private void startTimers(){
         Log.i(LOG_TAG, "Starting timers...");
-        for(TimerTask task: mTimerTasks)
-            mTimer.schedule(task, TIMER_DELAY_SECONDS * 1000, TIMER_DELAY_SECONDS * 1000);
+        for(RepeatedTimerTask task: mTimerTasks) {
+            Log.i(LOG_TAG, String.format("Scheduling %s on %s", task.getTaskName(), task.getDate()));
+            mTimer.schedule(task, task.getDate());
+        }
     }
 
     private void stopTimers(){

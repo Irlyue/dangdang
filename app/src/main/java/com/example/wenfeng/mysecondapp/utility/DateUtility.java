@@ -34,4 +34,24 @@ public class DateUtility {
         timeWanted.set(Calendar.DAY_OF_MONTH, dayWanted.get(Calendar.DAY_OF_MONTH));
         return timeWanted.getTime();
     }
+
+    public static Date advanceDate(Date date, int hours, int minutes, int seconds){
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(date);
+
+        calendar.add(Calendar.HOUR_OF_DAY, hours);
+        calendar.add(Calendar.MINUTE, minutes);
+        calendar.add(Calendar.SECOND, seconds);
+
+        return calendar.getTime();
+    }
+
+    public static Date advanceDate(Date date, int days){
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(date);
+
+        calendar.add(Calendar.DAY_OF_MONTH, days);
+
+        return calendar.getTime();
+    }
 }
