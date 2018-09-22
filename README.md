@@ -19,7 +19,7 @@ One of these prerequisites must be satisfied before using the app.
 
 Both of this two settings can be done in most of the cellphones, either in the normal setting panel or in the developer option. Take OPPO A59m for example, when we enter the developer mode, we can see these options:
 
-![](images/oppo_a59m.png)
+<center><image src="images/oppo_a59m.png"/></center>
 
 # Usage
 
@@ -27,7 +27,7 @@ Both of this two settings can be done in most of the cellphones, either in the n
 
 2. Select the time range you want to check in, say 07:45:00~08:20:00, which is the default setting. Click on it will pop up a time picker:
 
-   ![](images/time_picker.png)
+   <center><image src="images/time_picker.png"/></center>
 
 3. Click the `START` button to start an ever-ending background service and you're good to go.
 
@@ -55,7 +55,7 @@ Both of this two settings can be done in most of the cellphones, either in the n
 
    Well, you can but it's a little bit annoying. Since we keep all the logging in the external storage, you can view it with any text editor in your cellphone, say WPS. The logging files can be found in the directory "Dangdang/". Search for the tag `CheckInService`.
 
-   ![](images/logging.png)
+   <center><image src="images/logging.png"/></center>
 
 3. How do I stop the background service?
 
