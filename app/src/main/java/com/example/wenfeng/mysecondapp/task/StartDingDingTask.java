@@ -2,16 +2,13 @@ package com.example.wenfeng.mysecondapp.task;
 
 import android.app.Activity;
 import android.app.ActivityManager;
-import android.app.KeyguardManager;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
 import android.os.PowerManager;
-import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 
 import com.example.wenfeng.mysecondapp.CheckInService;
-import com.example.wenfeng.mysecondapp.MainActivity;
 import com.example.wenfeng.mysecondapp.strategy.IResetStrategy;
 import com.example.wenfeng.mysecondapp.utility.AndroidUtility;
 
@@ -33,9 +30,9 @@ public class StartDingDingTask extends RepeatedTimerTask {
         Log.i(CheckInService.LOG_TAG, String.format("ExecuteTask() on %s", getDate()));
         wakeUpScreen();
         startDingDing();
-        waitForSeconds(WAIT_SECONDS);
+        AndroidUtility.waitForSeconds(WAIT_SECONDS);
         goToHomeScreen();
-        waitForSeconds(5);
+        AndroidUtility.waitForSeconds(5);
         killDingDing();
     }
 
@@ -51,14 +48,6 @@ public class StartDingDingTask extends RepeatedTimerTask {
                 | PowerManager.ACQUIRE_CAUSES_WAKEUP
                 | PowerManager.ON_AFTER_RELEASE, "MyWakeLock");
         wakeLock.acquire(50000);
-    }
-
-    private void waitForSeconds(int seconds){
-        try {
-            Thread.sleep(seconds * 1000);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
     }
 
     private void goToHomeScreen(){
