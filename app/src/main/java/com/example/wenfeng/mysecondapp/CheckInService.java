@@ -9,7 +9,9 @@ import android.support.annotation.Nullable;
 import android.util.Log;
 
 import com.example.wenfeng.mysecondapp.strategy.FixedDateStrategy;
+import com.example.wenfeng.mysecondapp.strategy.FixedPeriodStrategy;
 import com.example.wenfeng.mysecondapp.strategy.RandomDateStrategy;
+import com.example.wenfeng.mysecondapp.task.PulseTimerTask;
 import com.example.wenfeng.mysecondapp.task.RepeatedTimerTask;
 import com.example.wenfeng.mysecondapp.utility.DateUtility;
 import com.example.wenfeng.mysecondapp.task.StartDingDingTask;
@@ -69,6 +71,7 @@ public class CheckInService extends Service {
         Log.i(LOG_TAG, String.format("Left: %s, right: %s", left, right));
         StartDingDingTask startDingDingTask = new StartDingDingTask(mTimer, new RandomDateStrategy(left, right), this);
         mTimerTasks.add(startDingDingTask);
+        mTimerTasks.add(new PulseTimerTask(mTimer, new FixedPeriodStrategy(600)));
     }
 
     private void saveCurrentData(Intent intent){

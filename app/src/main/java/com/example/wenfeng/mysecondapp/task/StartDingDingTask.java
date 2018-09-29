@@ -33,7 +33,7 @@ public class StartDingDingTask extends RepeatedTimerTask {
         AndroidUtility.waitForSeconds(WAIT_SECONDS);
         goToHomeScreen();
         AndroidUtility.waitForSeconds(5);
-        killDingDing();
+//        killDingDing();
     }
 
     private void startDingDing(){

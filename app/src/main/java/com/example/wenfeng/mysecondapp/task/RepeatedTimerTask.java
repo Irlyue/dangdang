@@ -11,9 +11,9 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 public abstract class RepeatedTimerTask extends TimerTask{
-    private Timer mTimer;
-    private Date mDate;
-    private IResetStrategy mStrategy;
+    protected Timer mTimer;
+    protected Date mDate;
+    protected IResetStrategy mStrategy;
     private String mTaskName;
 
     public RepeatedTimerTask(Timer timer, IResetStrategy strategy, String taskName){
