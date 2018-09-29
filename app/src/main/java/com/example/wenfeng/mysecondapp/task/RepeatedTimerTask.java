@@ -1,8 +1,9 @@
 package com.example.wenfeng.mysecondapp.task;
 
-import android.util.Log;
 
 import com.example.wenfeng.mysecondapp.CheckInService;
+import com.example.wenfeng.mysecondapp.log.MyLogManager;
+import com.example.wenfeng.mysecondapp.log.MyLogger;
 import com.example.wenfeng.mysecondapp.strategy.IResetStrategy;
 import com.example.wenfeng.mysecondapp.utility.DateUtility;
 
@@ -11,13 +12,14 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 public abstract class RepeatedTimerTask extends TimerTask{
+    private final static MyLogger log = MyLogManager.getLogger();
     protected Timer mTimer;
     protected Date mDate;
     protected IResetStrategy mStrategy;
     private String mTaskName;
 
     public RepeatedTimerTask(Timer timer, IResetStrategy strategy, String taskName){
-        mTimer = timer;
+        mTimer = new Timer();
         mStrategy = strategy;
         mTaskName = taskName;
         mDate = DateUtility.setDayAndReturn(new Date(), mStrategy.calcDate());
@@ -45,8 +47,9 @@ public abstract class RepeatedTimerTask extends TimerTask{
         mDate = DateUtility.setDayAndReturn(tomorrow, mStrategy.calcDate());
     }
 
-    protected void startNewTask(){
-        Log.i(CheckInService.LOG_TAG, String.format("Scheduling new task %s on %s", getTaskName(), getDate()));
+    public void startNewTask(){
+        log.info(CheckInService.LOG_TAG, String.format("Scheduling new task %s on %s", getTaskName(), getDate()));
+        mTimer = new Timer();
         mTimer.schedule(new NewTask(), mDate);
     }
 
