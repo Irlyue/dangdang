@@ -33,7 +33,8 @@ public class CheckInService extends Service {
     public final static String E_RANGE_RIGHT = "3";
     public final static String SP = "shared preferences";
 
-    private List<RepeatedTimerTask> mTimerTasks;
+    private TimerTask mStartDingDing;
+    private Timer mTimer;
 
     @Nullable
     @Override
@@ -42,7 +43,7 @@ public class CheckInService extends Service {
     }
 
     public CheckInService(){
-        mTimerTasks = new ArrayList<>();
+        mTimer = new Timer();
     }
 
 
@@ -71,9 +72,7 @@ public class CheckInService extends Service {
             log.info(LOG_TAG, "Data unavailable, restored from shared preference.");
         }
         log.info(LOG_TAG, String.format("Left: %s, right: %s", left, right));
-        StartDingDingTask startDingDingTask = new StartDingDingTask(null, new RandomDateStrategy(left, right), this);
-        mTimerTasks.add(startDingDingTask);
-        mTimerTasks.add(new PulseTimerTask(null, new FixedPeriodStrategy(600)));
+        mStartDingDing = new StartDingDingTask(new RandomDateStrategy(left, right), this);
     }
 
     private void saveCurrentData(Intent intent){
@@ -95,11 +94,8 @@ public class CheckInService extends Service {
     }
 
     private void startTimers(){
-        log.info(LOG_TAG, "Starting timers...");
-        for(RepeatedTimerTask task: mTimerTasks) {
-            log.info(LOG_TAG, String.format("Scheduling %s on %s", task.getTaskName(), task.getDate()));
-            task.startNewTask();
-        }
+        log.info(LOG_TAG, "Starting timer...");
+        mTimer.schedule(mStartDingDing, 1000, 1000);
     }
 
     private void stopTimers(){

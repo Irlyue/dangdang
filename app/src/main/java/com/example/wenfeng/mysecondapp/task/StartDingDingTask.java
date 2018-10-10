@@ -12,24 +12,33 @@ import com.example.wenfeng.mysecondapp.log.MyLogManager;
 import com.example.wenfeng.mysecondapp.log.MyLogger;
 import com.example.wenfeng.mysecondapp.strategy.IResetStrategy;
 import com.example.wenfeng.mysecondapp.utility.AndroidUtility;
+import com.example.wenfeng.mysecondapp.utility.DateUtility;
 
+import java.util.Date;
 import java.util.Timer;
+import java.util.TimerTask;
 
-public class StartDingDingTask extends RepeatedTimerTask {
+public class StartDingDingTask extends TimerTask {
     private final static MyLogger log = MyLogManager.getLogger();
+    public final static int PRINT_EVERY = 30*60;
     public final static int WAIT_SECONDS = 30;
     public final static String DING_DING_PACKAGE_NAME = "com.alibaba.android.rimet";
     private Service mService;
+    private IResetStrategy mStrategy;
+    private Date mCheckInDate;
+    private int mCounter;
 
 
-    public StartDingDingTask(Timer timer, IResetStrategy strategy, Service service){
-        super(timer, strategy, StartDingDingTask.class.getSimpleName());
+    public StartDingDingTask(IResetStrategy strategy, Service service){
+        mStrategy = strategy;
         mService = service;
+        mCounter = 0;
+
+        mCheckInDate = DateUtility.setDayAndReturn(new Date(), mStrategy.calcDate());
     }
 
-    @Override
-    protected void executeTask() {
-        log.info(CheckInService.LOG_TAG, String.format("ExecuteTask() on %s", getDate()));
+    protected void checkIn() {
+        log.info(CheckInService.LOG_TAG, String.format("ExecuteTask() on %s", new Date()));
         wakeUpScreen();
         startDingDing();
         AndroidUtility.waitForSeconds(WAIT_SECONDS);
@@ -64,5 +73,26 @@ public class StartDingDingTask extends RepeatedTimerTask {
         log.info(CheckInService.LOG_TAG, "Killing ding ding...");
         ActivityManager am = (ActivityManager) mService.getSystemService(Activity.ACTIVITY_SERVICE);
         am.killBackgroundProcesses(DING_DING_PACKAGE_NAME);
+    }
+
+    @Override
+    public void run() {
+        mCounter++;
+        Date now = new Date();
+        if(now.after(mCheckInDate)){
+            checkIn();
+            resetCheckInTime();
+            log.info(CheckInService.LOG_TAG, String.format("Next check in at %s", mCheckInDate));
+        }
+
+        if(mCounter % PRINT_EVERY == 0){
+            log.info(CheckInService.LOG_TAG, "Still alive...");
+        }
+    }
+
+    private void resetCheckInTime(){
+        Date timeWanted = mStrategy.calcDate();
+        Date tomorrow = DateUtility.advanceDate(new Date(), 1);
+        mCheckInDate = DateUtility.setDayAndReturn(tomorrow, timeWanted);
     }
 }
